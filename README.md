@@ -1,4 +1,4 @@
-# Phaser 3 Webpack Project Template
+# Phaser 3 Webpack Game 23Supremos
 
 A Phaser 3 Project Game 23Supremos
 
