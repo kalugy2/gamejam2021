@@ -6,6 +6,7 @@ var config = {
     height: 600,
     parent: 'phaser-example',
     pixelArt: true,
+    zoom: 1,
     backgroundColor: '#000000',
     physics: {
         default: 'arcade'
@@ -20,6 +21,7 @@ var config = {
 var light;
 var offsets = [];
 var player ;
+var player2 ;
 var layer;
 var cursors;
 var scoreText;
@@ -28,85 +30,80 @@ var mons1;
 var walk1;
 var mons2;
 var walk2;
-
+var key;
 var game = new Phaser.Game(config);
 
 function preload ()
 {
     this.load.image('tiles', [ 'assets/brick04.png', 'assets/drawtiles1_n.png' ]);
+    this.load.image('key',  'assets/key.png' );
     this.load.tilemapCSV('map', 'assets/grid.csv');
     this.load.audio('atmosfera', 'assets/audio/gamejamformat.mp3');
-    this.load.spritesheet('lui', 'assets/luisPr.png', 
-    { frameWidth: 58, frameHeight: 58 });
-    this.load.spritesheet('monst1', 'assets/enemie1.png', 
-    { frameWidth: 58, frameHeight: 58 });
-    this.load.spritesheet('monst2', 'assets/enemigo2.png', 
-    { frameWidth: 91, frameHeight: 91 });
+    this.load.spritesheet('lui', 'assets/luisPr.png', { frameWidth: 58, frameHeight: 58 });
+    this.load.spritesheet('main_Character', 'assets/luis_walking.png', { frameWidth: 30, frameHeight: 30 });
+    this.load.spritesheet('monst1', 'assets/enemie1.png', { frameWidth: 58, frameHeight: 58 });
+    this.load.spritesheet('monst2', 'assets/enemigo2.png', { frameWidth: 91, frameHeight: 91 });
    
 }
 
 function create ()
 {
     var map = this.make.tilemap({ key: 'map', tileWidth: 32, tileHeight: 32 });
-
-    
-
     var tileset = map.addTilesetImage('tiles', null, 32, 32, 1, 2);
-
     layer = map.createLayer(0, tileset, 0, 0).setPipeline('Light2D');
 
-     player = this.physics.add.sprite(58, 58, 'lui');
-    // player = this.add.image(32+16, 32+16, 'car');
+    key = this.add.image(748 , 334, 'key');
+    key.setDataEnabled();
+    key.data.set('key', 0);
+
+    player = this.physics.add.sprite(47, 47, 'main_Character');
+    
     mons1 = this.add.sprite(300, 58, 'monst2');
-
     // mons1.animations.add('walk');
-
     // mons1.animations.play('walk', 30 , true);
+
     cursors = this.input.keyboard.createCursorKeys();
-
-    let audio = this.sound.add('atmosfera', {loop: true});
-
-    audio.play();
-
-    light = this.lights.addLight(0, 0, 100);
 
     this.cameras.main.setBounds(0, 0, layer.displayWidth, layer.displayHeight);
     this.cameras.main.startFollow(player);
 
     scoreText = this.add.text(25, 10, 'score: 0', { fontSize: '19px', fill: '#9B8E78' });
-
     llave = this.add.text(155, 10, 'key: 0/1', { fontSize: '19px', fill: '#9B8E78' });
 
+    let audio = this.sound.add('atmosfera', {loop: true});
+    //audio.play();
+    light = this.lights.addLight(0, 0, 100);
     this.lights.enable().setAmbientColor(0x000111);
-
+    
     this.anims.create({
         key: 'left',
-        frames: this.anims.generateFrameNumbers('lui', { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers('main_Character', { start: 0, end: 3 }),
         frameRate: 10,
         repeat: -1
     });
     this.anims.create({
         key: 'right',
-        frames: this.anims.generateFrameNumbers('lui', { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers('main_Character', { start: 0, end: 3 }),
         frameRate: 10,
         repeat: -1
     });
     this.anims.create({
         key: 'up',
-        frames: this.anims.generateFrameNumbers('lui', { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers('main_Character', { start: 0, end: 3 }),
         frameRate: 10,
         repeat: -1
     });
     this.anims.create({
         key: 'down',
-        frames: this.anims.generateFrameNumbers('lui', { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers('main_Character', { start: 0, end: 3 }),
         frameRate: 10,
         repeat: -1
     });
-
-
+    
     offsets = [ 0.1, 0.3, 0.5, 0.7 ];
 }
+
+var isCharacterWithKey=0;
 
 function update ()
 {
@@ -131,6 +128,15 @@ function update ()
         if (tile.index === 2)
         {
             //  Blocked, we can't move
+        }
+        else if(tile.index === 3 && isCharacterWithKey==0)
+        {
+            llave.destroy();
+            llave = this.add.text(155, 10, 'key: 1/1', { fontSize: '19px', fill: '#9B8E78' });
+            key.destroy();
+            isCharacterWithKey=1;
+            player.x += 32;
+            player.angle = 0;
         }
         else
         {
@@ -160,14 +166,24 @@ function update ()
         {
             //  Blocked, we can't move
         }
+        else if(tile.index === 4)
+        {
+            if(isCharacterWithKey == 1){
+                console.log("WINWIN")
+                player.y += 32;
+                player.angle = 90;
+            }
+            else{
+                console.log("NOT KEY")
+            }
+        }
         else
         {
             player.y += 32;
             player.angle = 90;
         }
     }
-
-
+    
     if (cursors.left.isDown)
     {
         player.anims.play('left', true);
@@ -205,3 +221,4 @@ function update ()
     //     }
     // });
 }
+
