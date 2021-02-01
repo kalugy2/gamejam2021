@@ -45,7 +45,7 @@ function preload ()
     this.load.audio('monster', 'assets/audio/vozenemigogamejam.mp3');
     this.load.audio('win', 'assets/audio/wingamejam.mp3');
     this.load.audio('catch', 'assets/audio/atrapar.mp3')
-    this.load.spritesheet('lui', 'assets/luisSp.png', 
+    this.load.spritesheet('lui', 'assets/luisp.png', 
     { frameWidth: 45, frameHeight: 32 });
     this.load.spritesheet('monst1', 'assets/enemie1.png', 
     { frameWidth: 58, frameHeight: 58 });
